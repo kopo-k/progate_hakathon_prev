@@ -2,7 +2,7 @@ import { Tv, Youtube, Twitch } from 'lucide-react';
 
 export function EmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center h-full px-4">
+    <div className="flex flex-col items-center px-4">
       {/* アイコン */}
       <div className="w-20 h-20 bg-[var(--color-surface-elevated)] rounded-2xl flex items-center justify-center mb-6">
         <Tv size={36} className="text-[var(--color-text-subtle)]" />

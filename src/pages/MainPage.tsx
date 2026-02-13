@@ -1,60 +1,264 @@
+import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Menu, Grid3X3 } from 'lucide-react';
+import { Menu, Grid3X3, Save, FolderOpen, Heart, X } from 'lucide-react';
 import { UrlInput } from '../components/UrlInput/UrlInput';
 import { StreamGrid } from '../components/StreamGrid/StreamGrid';
 import { EmptyState } from '../components/EmptyState/EmptyState';
 import { useStreams } from '../hooks/useStreams';
+import { useLayouts } from '../hooks/useLayouts';
+import { useFavorites } from '../hooks/useFavorites';
 import type { LayoutContext } from '../components/Layout/AppLayout';
+import type { Stream } from '../types';
 
 export function MainPage() {
   const { openSidebar } = useOutletContext<LayoutContext>();
-  const { streams, addStream, removeStream, toggleMute, reorderStreams, canAddMore } =
-    useStreams();
+  const { streams, addStream, removeStream, toggleMute, reorderStreams, setAllStreams } = useStreams();
+  const { layouts, saveLayout, deleteLayout } = useLayouts();
+  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
+
+  const [showLayoutMenu, setShowLayoutMenu] = useState(false);
+  const [showFavoritesMenu, setShowFavoritesMenu] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [layoutName, setLayoutName] = useState('');
+
+  const handleSaveClick = () => {
+    if (streams.length === 0) return;
+    setLayoutName('');
+    setShowSaveModal(true);
+  };
+
+  const handleSaveLayout = () => {
+    if (!layoutName.trim() || streams.length === 0) return;
+    saveLayout(layoutName.trim(), streams);
+    setShowSaveModal(false);
+    setLayoutName('');
+  };
+
+  const handleLoadLayout = (layoutStreams: Pick<Stream, 'url' | 'platform'>[]) => {
+    const newStreams: Stream[] = layoutStreams.map((s, index) => ({
+      id: Date.now().toString() + index,
+      url: s.url,
+      platform: s.platform,
+      isMuted: index > 0,
+    }));
+    setAllStreams(newStreams);
+    setShowLayoutMenu(false);
+  };
+
+  const handleAddFavoriteStream = (url: string) => {
+    addStream(url);
+    setShowFavoritesMenu(false);
+  };
+
+  const handleToggleFavorite = (stream: Stream) => {
+    if (isFavorite(stream.url)) {
+      const fav = favorites.find(f => f.url === stream.url);
+      if (fav) removeFavorite(fav.id);
+    } else {
+      const name = prompt('お気に入りの名前を入力してください');
+      if (name) {
+        addFavorite(stream.url, stream.platform, name);
+      }
+    }
+  };
 
   return (
-    <div className="flex flex-col h-full">
-      {/* 統合ヘッダー: ハンバーガー + ロゴ + URL入力 */}
-      <header className="h-12 bg-[var(--color-surface)] border-b border-[var(--color-border)] flex items-center px-2 gap-3 shrink-0">
-        {/* メニューボタン */}
-        <button
-          onClick={openSidebar}
-          className="p-2 rounded-md hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] transition-colors shrink-0"
-        >
-          <Menu size={20} />
-        </button>
-
-        {/* ロゴ */}
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="w-8 h-8 bg-[var(--color-primary)] rounded-md flex items-center justify-center">
-            <Grid3X3 size={18} className="text-white" />
+    <div className="flex flex-col h-full min-h-0 flex-1">
+      {/* ヘッダー */}
+      <header className="h-16 bg-[var(--color-surface)] border-b border-[var(--color-border)] flex items-center px-4 shrink-0">
+        {/* 左: メニューボタン + ロゴ */}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={openSidebar}
+            className="p-2.5 rounded-md hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] transition-colors"
+          >
+            <Menu size={24} />
+          </button>
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-[var(--color-primary)] rounded-lg flex items-center justify-center">
+              <Grid3X3 size={22} className="text-white" />
+            </div>
+            <span className="font-semibold text-lg text-[var(--color-text)] hidden sm:block">
+              MultiView
+            </span>
           </div>
-          <span className="font-semibold text-base text-[var(--color-text)] hidden sm:block">
-            MultiView
-          </span>
         </div>
 
-        {/* URL入力 */}
-        <div className="flex-1 flex items-center gap-3">
-          <UrlInput onAdd={addStream} disabled={!canAddMore} />
-          <span className="text-sm text-[var(--color-text-muted)] shrink-0">
-            {streams.length}/4
-          </span>
+        {/* 中央: URL入力 */}
+        <div className="flex-1 flex justify-center px-4">
+          <UrlInput onAdd={addStream} />
+        </div>
+
+        {/* 右: お気に入り + レイアウト読み込み + 保存 */}
+        <div className="flex items-center gap-1 shrink-0">
+          {/* お気に入り */}
+          <div className="relative">
+            <button
+              onClick={() => setShowFavoritesMenu(!showFavoritesMenu)}
+              className="p-2.5 rounded-md hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] transition-colors"
+              title="お気に入り配信"
+            >
+              <Heart size={20} />
+            </button>
+
+            {showFavoritesMenu && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowFavoritesMenu(false)} />
+                <div className="absolute right-0 top-full mt-2 w-72 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg shadow-lg z-50 overflow-hidden">
+                  <div className="px-3 py-2 border-b border-[var(--color-border)] text-sm font-medium text-[var(--color-text)]">
+                    お気に入り配信
+                  </div>
+                  {favorites.length === 0 ? (
+                    <div className="px-3 py-4 text-sm text-[var(--color-text-muted)] text-center">
+                      お気に入りはありません
+                    </div>
+                  ) : (
+                    <div className="max-h-64 overflow-y-auto">
+                      {favorites.map((fav) => (
+                        <div key={fav.id} className="flex items-center gap-2 px-3 py-2 hover:bg-[var(--color-surface-hover)]">
+                          <button
+                            onClick={() => handleAddFavoriteStream(fav.url)}
+                            className="flex-1 text-left"
+                          >
+                            <div className="text-sm text-[var(--color-text)]">{fav.name}</div>
+                            <div className="text-xs text-[var(--color-text-muted)] capitalize">{fav.platform}</div>
+                          </button>
+                          <button
+                            onClick={() => removeFavorite(fav.id)}
+                            className="p-1 text-[var(--color-text-muted)] hover:text-red-400"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* レイアウト読み込み */}
+          <div className="relative">
+            <button
+              onClick={() => setShowLayoutMenu(!showLayoutMenu)}
+              className="p-2.5 rounded-md hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] transition-colors"
+              title="保存したレイアウト"
+            >
+              <FolderOpen size={20} />
+            </button>
+
+            {showLayoutMenu && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowLayoutMenu(false)} />
+                <div className="absolute right-0 top-full mt-2 w-72 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg shadow-lg z-50 overflow-hidden">
+                  <div className="px-3 py-2 border-b border-[var(--color-border)] text-sm font-medium text-[var(--color-text)]">
+                    保存したレイアウト
+                  </div>
+                  {layouts.length === 0 ? (
+                    <div className="px-3 py-4 text-sm text-[var(--color-text-muted)] text-center">
+                      保存されたレイアウトはありません
+                    </div>
+                  ) : (
+                    <div className="max-h-64 overflow-y-auto">
+                      {layouts.map((layout) => (
+                        <div key={layout.id} className="flex items-center gap-2 px-3 py-2 hover:bg-[var(--color-surface-hover)]">
+                          <button
+                            onClick={() => handleLoadLayout(layout.streams)}
+                            className="flex-1 text-left"
+                          >
+                            <div className="text-sm text-[var(--color-text)]">{layout.name}</div>
+                            <div className="text-xs text-[var(--color-text-muted)]">
+                              {layout.streams.length}つの配信
+                            </div>
+                          </button>
+                          <button
+                            onClick={() => deleteLayout(layout.id)}
+                            className="p-1 text-[var(--color-text-muted)] hover:text-red-400"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* 保存ボタン */}
+          <button
+            onClick={handleSaveClick}
+            disabled={streams.length === 0}
+            className={`p-2.5 rounded-md transition-colors ${
+              streams.length === 0
+                ? 'text-[var(--color-text-subtle)] cursor-not-allowed'
+                : 'hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)]'
+            }`}
+            title="レイアウトを保存"
+          >
+            <Save size={20} />
+          </button>
         </div>
       </header>
 
       {/* メインコンテンツ */}
-      <div className="flex-1 min-h-0 p-2">
+      <div className="flex-1 min-h-0 p-2 flex flex-col">
         {streams.length === 0 ? (
-          <EmptyState />
+          <div className="flex-1 flex items-center justify-center">
+            <EmptyState />
+          </div>
         ) : (
-          <StreamGrid
-            streams={streams}
-            onReorder={reorderStreams}
-            onToggleMute={toggleMute}
-            onRemove={removeStream}
-          />
+          <div className="flex-1">
+            <StreamGrid
+              streams={streams}
+              onReorder={reorderStreams}
+              onToggleMute={toggleMute}
+              onRemove={removeStream}
+              onToggleFavorite={handleToggleFavorite}
+              isFavorite={isFavorite}
+            />
+          </div>
         )}
       </div>
+
+      {/* レイアウト保存モーダル */}
+      {showSaveModal && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setShowSaveModal(false)} />
+          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg shadow-lg z-50 p-4">
+            <h3 className="text-lg font-semibold text-[var(--color-text)] mb-4">レイアウトを保存</h3>
+            <input
+              type="text"
+              value={layoutName}
+              onChange={(e) => setLayoutName(e.target.value)}
+              placeholder="レイアウト名を入力"
+              className="input w-full mb-4"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSaveLayout();
+                if (e.key === 'Escape') setShowSaveModal(false);
+              }}
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setShowSaveModal(false)}
+                className="btn px-4 py-2 text-sm"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleSaveLayout}
+                disabled={!layoutName.trim()}
+                className="btn btn-primary px-4 py-2 text-sm disabled:opacity-50"
+              >
+                保存
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

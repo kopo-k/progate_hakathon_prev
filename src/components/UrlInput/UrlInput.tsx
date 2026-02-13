@@ -23,8 +23,8 @@ export function UrlInput({ onAdd, disabled }: UrlInputProps) {
   };
 
   return (
-    <div className="flex-1 max-w-xl">
-      <form onSubmit={handleSubmit} className="flex gap-2 items-center">
+    <div className="w-full max-w-2xl">
+      <form onSubmit={handleSubmit} className="flex gap-3 items-center">
         <div className="flex-1 relative">
           <input
             type="text"
@@ -35,7 +35,7 @@ export function UrlInput({ onAdd, disabled }: UrlInputProps) {
             }}
             placeholder="YouTubeまたはTwitchのURLを入力"
             disabled={disabled}
-            className="input text-sm h-8 w-full"
+            className="input text-base h-10 w-full px-4"
           />
           {error && (
             <div className="absolute left-0 top-full mt-1 flex items-center gap-1 text-red-400 text-xs z-10">
@@ -47,9 +47,9 @@ export function UrlInput({ onAdd, disabled }: UrlInputProps) {
         <button
           type="submit"
           disabled={disabled || !url.trim()}
-          className="btn btn-primary h-8 text-sm px-3 disabled:opacity-50 shrink-0"
+          className="btn btn-primary h-10 text-base px-4 disabled:opacity-50 shrink-0"
         >
-          <Plus size={14} />
+          <Plus size={18} />
           <span className="hidden sm:inline">追加</span>
         </button>
       </form>

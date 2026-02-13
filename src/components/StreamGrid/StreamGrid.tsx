@@ -20,6 +20,8 @@ interface StreamGridProps {
   onReorder: (activeId: string, overId: string) => void;
   onToggleMute: (id: string) => void;
   onRemove: (id: string) => void;
+  onToggleFavorite?: (stream: Stream) => void;
+  isFavorite?: (url: string) => boolean;
 }
 
 export function StreamGrid({
@@ -27,6 +29,8 @@ export function StreamGrid({
   onReorder,
   onToggleMute,
   onRemove,
+  onToggleFavorite,
+  isFavorite,
 }: StreamGridProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -49,17 +53,14 @@ export function StreamGrid({
 
   // グリッドレイアウト
   const getGridClass = () => {
-    switch (streams.length) {
-      case 1:
-        return 'grid-cols-1 grid-rows-1';
-      case 2:
-        return 'grid-cols-2 grid-rows-1';
-      case 3:
-        return 'grid-cols-2 grid-rows-2 [&>*:last-child]:col-span-2 lg:[&>*:last-child]:col-span-1 lg:grid-cols-3 lg:grid-rows-1';
-      case 4:
-      default:
-        return 'grid-cols-2 grid-rows-2';
-    }
+    const count = streams.length;
+    if (count === 1) return 'grid-cols-1 grid-rows-1';
+    if (count === 2) return 'grid-cols-2 grid-rows-1';
+    if (count === 3) return 'grid-cols-2 grid-rows-2 [&>*:last-child]:col-span-2 lg:[&>*:last-child]:col-span-1 lg:grid-cols-3 lg:grid-rows-1';
+    if (count === 4) return 'grid-cols-2 grid-rows-2';
+    if (count <= 6) return 'grid-cols-3 grid-rows-2';
+    if (count <= 9) return 'grid-cols-3 grid-rows-3';
+    return 'grid-cols-4 auto-rows-fr';
   };
 
   return (
@@ -76,6 +77,8 @@ export function StreamGrid({
               stream={stream}
               onToggleMute={onToggleMute}
               onRemove={onRemove}
+              onToggleFavorite={onToggleFavorite}
+              isFavorite={isFavorite?.(stream.url)}
             />
           ))}
         </div>

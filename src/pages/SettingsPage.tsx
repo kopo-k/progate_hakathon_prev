@@ -1,12 +1,40 @@
-import { User, Bell, Monitor, HelpCircle, ExternalLink } from 'lucide-react';
+import { useOutletContext } from 'react-router-dom';
+import { Menu, Grid3X3, User, Bell, Monitor, HelpCircle, ExternalLink } from 'lucide-react';
+import type { LayoutContext } from '../components/Layout/AppLayout';
 
 export function SettingsPage() {
+  const { openSidebar } = useOutletContext<LayoutContext>();
+
   return (
-    <div className="flex flex-col h-full">
-      {/* サブヘッダー */}
-      <div className="px-4 py-3 border-b border-[var(--color-border)] bg-[var(--color-surface)]">
-        <span className="text-sm text-[var(--color-text-muted)]">アプリの設定</span>
-      </div>
+    <div className="flex flex-col h-full min-h-0 flex-1">
+      {/* ヘッダー */}
+      <header className="h-16 bg-[var(--color-surface)] border-b border-[var(--color-border)] flex items-center px-4 shrink-0">
+        {/* 左: メニューボタン + ロゴ */}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={openSidebar}
+            className="p-2.5 rounded-md hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] transition-colors"
+          >
+            <Menu size={24} />
+          </button>
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-[var(--color-primary)] rounded-lg flex items-center justify-center">
+              <Grid3X3 size={22} className="text-white" />
+            </div>
+            <span className="font-semibold text-lg text-[var(--color-text)] hidden sm:block">
+              MultiView
+            </span>
+          </div>
+        </div>
+
+        {/* 中央: ページタイトル */}
+        <div className="flex-1 flex justify-center">
+          <span className="text-base text-[var(--color-text)]">設定</span>
+        </div>
+
+        {/* 右: スペーサー */}
+        <div className="w-[140px] shrink-0" />
+      </header>
 
       {/* コンテンツ */}
       <div className="flex-1 overflow-y-auto p-4">

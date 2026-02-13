@@ -68,13 +68,13 @@ export function SignupPage({ onSignup }: SignupPageProps) {
                 ユーザー名
               </label>
               <div className="relative">
-                <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-subtle)]" />
+                <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-subtle)] pointer-events-none" />
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="ユーザー名"
-                  className="input pl-9"
+                  className="input !pl-10"
                   required
                 />
               </div>
@@ -86,13 +86,13 @@ export function SignupPage({ onSignup }: SignupPageProps) {
                 メールアドレス
               </label>
               <div className="relative">
-                <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-subtle)]" />
+                <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-subtle)] pointer-events-none" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="mail@example.com"
-                  className="input pl-9"
+                  className="input !pl-10"
                   required
                 />
               </div>
@@ -104,13 +104,13 @@ export function SignupPage({ onSignup }: SignupPageProps) {
                 パスワード
               </label>
               <div className="relative">
-                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-subtle)]" />
+                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-subtle)] pointer-events-none" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="8文字以上"
-                  className="input pl-9 pr-9"
+                  className="input !pl-10 !pr-10"
                   required
                 />
                 <button
@@ -129,13 +129,13 @@ export function SignupPage({ onSignup }: SignupPageProps) {
                 パスワード（確認）
               </label>
               <div className="relative">
-                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-subtle)]" />
+                <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-subtle)] pointer-events-none" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="パスワードを再入力"
-                  className="input pl-9"
+                  className="input !pl-10"
                   required
                 />
               </div>

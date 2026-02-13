@@ -2,8 +2,6 @@ import { useState, useCallback } from 'react';
 import type { Stream } from '../types';
 import { detectPlatform, isValidStreamUrl } from '../utils/urlParser';
 
-const MAX_STREAMS = 4;
-
 export function useStreams() {
   const [streams, setStreams] = useState<Stream[]>([]);
 
@@ -14,10 +12,6 @@ export function useStreams() {
 
     if (!isValidStreamUrl(url)) {
       return { success: false, error: 'YouTubeまたはTwitchのURLを入力してください' };
-    }
-
-    if (streams.length >= MAX_STREAMS) {
-      return { success: false, error: `最大${MAX_STREAMS}つまで追加できます` };
     }
 
     // 重複チェック
@@ -75,6 +69,5 @@ export function useStreams() {
     toggleMute,
     reorderStreams,
     setAllStreams,
-    canAddMore: streams.length < MAX_STREAMS,
   };
 }

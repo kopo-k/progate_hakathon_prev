@@ -19,7 +19,7 @@ export function AppLayout({ userName, onLogout }: AppLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--color-bg)]">
+    <div className="h-screen flex flex-col bg-[var(--color-bg)]">
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
