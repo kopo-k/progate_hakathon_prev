@@ -5,14 +5,7 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
-import { AppLayout } from './components';
-import {
-  MainPage,
-  LoginPage,
-  SignupPage,
-  SettingsPage,
-  FavoritesPage,
-} from './pages';
+import { MainPage, LoginPage, SignupPage } from './pages';
 
 interface User {
   id: string;
@@ -59,21 +52,15 @@ function App() {
     []
   );
 
-  const handleLogout = useCallback(() => {
-    setUser(null);
-  }, []);
-
   return (
     <BrowserRouter>
       <Routes>
         {/* 認証済みユーザー用ルート */}
         {user ? (
-          <Route element={<AppLayout userName={user.name} onLogout={handleLogout} />}>
+          <>
             <Route path="/" element={<MainPage />} />
-            <Route path="/favorites" element={<FavoritesPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
-          </Route>
+          </>
         ) : (
           <>
             {/* 未認証ユーザー用ルート */}

@@ -1,23 +1,17 @@
 import { useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { Menu, Grid3X3, Save, FolderOpen, Heart, X } from 'lucide-react';
+import { Grid3X3, Save, FolderOpen, X } from 'lucide-react';
 import { UrlInput } from '../components/UrlInput/UrlInput';
 import { StreamGrid } from '../components/StreamGrid/StreamGrid';
 import { EmptyState } from '../components/EmptyState/EmptyState';
 import { useStreams } from '../hooks/useStreams';
 import { useLayouts } from '../hooks/useLayouts';
-import { useFavorites } from '../hooks/useFavorites';
-import type { LayoutContext } from '../components/Layout/AppLayout';
 import type { Stream } from '../types';
 
 export function MainPage() {
-  const { openSidebar } = useOutletContext<LayoutContext>();
-  const { streams, addStream, removeStream, toggleMute, reorderStreams, setAllStreams } = useStreams();
+  const { streams, addStream, removeStream, toggleMute, reorderStreams, setAllStreams, canAddMore } = useStreams();
   const { layouts, saveLayout, deleteLayout } = useLayouts();
-  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
 
   const [showLayoutMenu, setShowLayoutMenu] = useState(false);
-  const [showFavoritesMenu, setShowFavoritesMenu] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [layoutName, setLayoutName] = useState('');
 
@@ -45,99 +39,27 @@ export function MainPage() {
     setShowLayoutMenu(false);
   };
 
-  const handleAddFavoriteStream = (url: string) => {
-    addStream(url);
-    setShowFavoritesMenu(false);
-  };
-
-  const handleToggleFavorite = (stream: Stream) => {
-    if (isFavorite(stream.url)) {
-      const fav = favorites.find(f => f.url === stream.url);
-      if (fav) removeFavorite(fav.id);
-    } else {
-      const name = prompt('お気に入りの名前を入力してください');
-      if (name) {
-        addFavorite(stream.url, stream.platform, name);
-      }
-    }
-  };
-
   return (
-    <div className="flex flex-col h-full min-h-0 flex-1">
+    <div className="flex flex-col h-screen">
       {/* ヘッダー */}
       <header className="h-16 bg-[var(--color-surface)] border-b border-[var(--color-border)] flex items-center px-4 shrink-0">
-        {/* 左: メニューボタン + ロゴ */}
-        <div className="flex items-center gap-3 shrink-0">
-          <button
-            onClick={openSidebar}
-            className="p-2.5 rounded-md hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] transition-colors"
-          >
-            <Menu size={24} />
-          </button>
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-[var(--color-primary)] rounded-lg flex items-center justify-center">
-              <Grid3X3 size={22} className="text-white" />
-            </div>
-            <span className="font-semibold text-lg text-[var(--color-text)] hidden sm:block">
-              MultiView
-            </span>
+        {/* 左: ロゴ */}
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="w-10 h-10 bg-[var(--color-primary)] rounded-lg flex items-center justify-center">
+            <Grid3X3 size={22} className="text-white" />
           </div>
+          <span className="font-semibold text-lg text-[var(--color-text)] hidden sm:block">
+            MultiView
+          </span>
         </div>
 
         {/* 中央: URL入力 */}
         <div className="flex-1 flex justify-center px-4">
-          <UrlInput onAdd={addStream} />
+          <UrlInput onAdd={addStream} disabled={!canAddMore} />
         </div>
 
-        {/* 右: お気に入り + レイアウト読み込み + 保存 */}
-        <div className="flex items-center gap-1 shrink-0">
-          {/* お気に入り */}
-          <div className="relative">
-            <button
-              onClick={() => setShowFavoritesMenu(!showFavoritesMenu)}
-              className="p-2.5 rounded-md hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] transition-colors"
-              title="お気に入り配信"
-            >
-              <Heart size={20} />
-            </button>
-
-            {showFavoritesMenu && (
-              <>
-                <div className="fixed inset-0 z-40" onClick={() => setShowFavoritesMenu(false)} />
-                <div className="absolute right-0 top-full mt-2 w-72 bg-[var(--color-surface-elevated)] border border-[var(--color-border)] rounded-lg shadow-lg z-50 overflow-hidden">
-                  <div className="px-3 py-2 border-b border-[var(--color-border)] text-sm font-medium text-[var(--color-text)]">
-                    お気に入り配信
-                  </div>
-                  {favorites.length === 0 ? (
-                    <div className="px-3 py-4 text-sm text-[var(--color-text-muted)] text-center">
-                      お気に入りはありません
-                    </div>
-                  ) : (
-                    <div className="max-h-64 overflow-y-auto">
-                      {favorites.map((fav) => (
-                        <div key={fav.id} className="flex items-center gap-2 px-3 py-2 hover:bg-[var(--color-surface-hover)]">
-                          <button
-                            onClick={() => handleAddFavoriteStream(fav.url)}
-                            className="flex-1 text-left"
-                          >
-                            <div className="text-sm text-[var(--color-text)]">{fav.name}</div>
-                            <div className="text-xs text-[var(--color-text-muted)] capitalize">{fav.platform}</div>
-                          </button>
-                          <button
-                            onClick={() => removeFavorite(fav.id)}
-                            className="p-1 text-[var(--color-text-muted)] hover:text-red-400"
-                          >
-                            <X size={14} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-
+        {/* 右: レイアウト読み込み + 保存 + カウント */}
+        <div className="flex items-center gap-2 shrink-0">
           {/* レイアウト読み込み */}
           <div className="relative">
             <button
@@ -200,6 +122,7 @@ export function MainPage() {
           >
             <Save size={20} />
           </button>
+
         </div>
       </header>
 
@@ -216,8 +139,6 @@ export function MainPage() {
               onReorder={reorderStreams}
               onToggleMute={toggleMute}
               onRemove={removeStream}
-              onToggleFavorite={handleToggleFavorite}
-              isFavorite={isFavorite}
             />
           </div>
         )}

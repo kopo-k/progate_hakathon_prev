@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Volume2, VolumeX, X, GripVertical, Youtube, Twitch, Heart } from 'lucide-react';
+import { Volume2, VolumeX, X, GripVertical, Youtube, Twitch } from 'lucide-react';
 import type { Stream } from '../../types';
 import {
   getYouTubeVideoId,
@@ -14,11 +14,9 @@ interface StreamTileProps {
   stream: Stream;
   onToggleMute: (id: string) => void;
   onRemove: (id: string) => void;
-  onToggleFavorite?: (stream: Stream) => void;
-  isFavorite?: boolean;
 }
 
-export function StreamTile({ stream, onToggleMute, onRemove, onToggleFavorite, isFavorite }: StreamTileProps) {
+export function StreamTile({ stream, onToggleMute, onRemove }: StreamTileProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   const {
@@ -116,19 +114,6 @@ export function StreamTile({ stream, onToggleMute, onRemove, onToggleFavorite, i
 
           {/* 右側ボタン */}
           <div className="flex items-center gap-1">
-            {onToggleFavorite && (
-              <button
-                onClick={() => onToggleFavorite(stream)}
-                className={`p-1.5 rounded transition-colors ${
-                  isFavorite
-                    ? 'bg-pink-500 hover:bg-pink-600'
-                    : 'bg-black/60 hover:bg-black/80'
-                }`}
-                title={isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'}
-              >
-                <Heart size={16} className="text-white" fill={isFavorite ? 'currentColor' : 'none'} />
-              </button>
-            )}
             <button
               onClick={() => onToggleMute(stream.id)}
               className={`p-1.5 rounded transition-colors ${
