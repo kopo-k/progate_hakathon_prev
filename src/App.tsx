@@ -5,7 +5,7 @@ import {
   Route,
   Navigate,
 } from 'react-router-dom';
-import { MainPage, LoginPage, SignupPage } from './pages';
+import { MainPage, LoginPage, SignupPage, ForgotPasswordPage } from './pages';
 
 interface User {
   id: string;
@@ -66,6 +66,7 @@ function App() {
             {/* 未認証ユーザー用ルート */}
             <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
             <Route path="/signup" element={<SignupPage onSignup={handleSignup} />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         )}

@@ -52,10 +52,10 @@ export function SignupPage({ onSignup }: SignupPageProps) {
             <Grid3X3 size={24} className="text-white" />
           </div>
           <h1 className="text-xl font-bold text-[var(--color-text)]">
-            MultiView
+            StreamBoard
           </h1>
           <p className="text-sm text-[var(--color-text-muted)] mt-1">
-            アカウント作成
+            複数配信を1画面で
           </p>
         </div>
 

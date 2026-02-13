@@ -49,7 +49,7 @@ export function MainPage() {
             <Grid3X3 size={22} className="text-white" />
           </div>
           <span className="font-semibold text-lg text-[var(--color-text)] hidden sm:block">
-            MultiView
+            StreamBoard
           </span>
         </div>
 

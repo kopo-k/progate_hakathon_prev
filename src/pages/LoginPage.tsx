@@ -39,10 +39,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             <Grid3X3 size={24} className="text-white" />
           </div>
           <h1 className="text-xl font-bold text-[var(--color-text)]">
-            MultiView
+            StreamBoard
           </h1>
           <p className="text-sm text-[var(--color-text-muted)] mt-1">
-            ログイン
+            複数配信を1画面で
           </p>
         </div>
 
@@ -90,6 +90,16 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
+            </div>
+
+            {/* パスワードを忘れた */}
+            <div className="text-right">
+              <Link
+                to="/forgot-password"
+                className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-primary)]"
+              >
+                パスワードをお忘れですか？
+              </Link>
             </div>
 
             {/* エラー */}
