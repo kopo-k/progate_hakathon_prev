@@ -52,24 +52,26 @@ function App() {
     []
   );
 
+  const handleLogout = useCallback(() => {
+    setUser(null);
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
-        {/* 認証済みユーザー用ルート */}
-        {user ? (
+        {/* メインページは常にアクセス可能 */}
+        <Route path="/" element={<MainPage user={user} onLogout={handleLogout} />} />
+
+        {/* 認証ページ（未ログイン時のみ） */}
+        {!user && (
           <>
-            <Route path="/" element={<MainPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </>
-        ) : (
-          <>
-            {/* 未認証ユーザー用ルート */}
             <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
             <Route path="/signup" element={<SignupPage onSignup={handleSignup} />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         )}
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

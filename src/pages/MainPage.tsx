@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Grid3X3, Save, FolderOpen, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Grid3X3, Save, FolderOpen, X, LogOut } from 'lucide-react';
 import { UrlInput } from '../components/UrlInput/UrlInput';
 import { StreamGrid } from '../components/StreamGrid/StreamGrid';
 import { EmptyState } from '../components/EmptyState/EmptyState';
@@ -7,7 +8,18 @@ import { useStreams } from '../hooks/useStreams';
 import { useLayouts } from '../hooks/useLayouts';
 import type { Stream } from '../types';
 
-export function MainPage() {
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+interface MainPageProps {
+  user: User | null;
+  onLogout: () => void;
+}
+
+export function MainPage({ user, onLogout }: MainPageProps) {
   const { streams, addStream, removeStream, toggleMute, reorderStreams, setAllStreams, canAddMore } = useStreams();
   const { layouts, saveLayout, deleteLayout } = useLayouts();
 
@@ -122,6 +134,32 @@ export function MainPage() {
           >
             <Save size={20} />
           </button>
+
+          {/* 認証ボタン */}
+          {user ? (
+            <button
+              onClick={onLogout}
+              className="p-2.5 rounded-md hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] transition-colors"
+              title="ログアウト"
+            >
+              <LogOut size={20} />
+            </button>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link
+                to="/login"
+                className="px-3 py-1.5 text-sm border border-[var(--color-border)] text-[var(--color-text-muted)] rounded-md hover:border-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
+              >
+                ログイン
+              </Link>
+              <Link
+                to="/signup"
+                className="px-3 py-1.5 text-sm border border-[var(--color-border)] text-[var(--color-text-muted)] rounded-md hover:border-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors"
+              >
+                新規登録
+              </Link>
+            </div>
+          )}
 
         </div>
       </header>
