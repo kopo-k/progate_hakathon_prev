@@ -84,6 +84,17 @@ export function StreamTile({ stream, onToggleMute, onRemove }: StreamTileProps) 
         {renderPlayer()}
       </div>
 
+      {/* ミュート状態インジケーター（常に表示） */}
+      <div className="absolute bottom-2 right-2 z-10">
+        <div className={`p-1.5 rounded ${stream.isMuted ? 'bg-black/70' : 'bg-[var(--color-primary)]'}`}>
+          {stream.isMuted ? (
+            <VolumeX size={14} className="text-white/80" />
+          ) : (
+            <Volume2 size={14} className="text-white" />
+          )}
+        </div>
+      </div>
+
       {/* オーバーレイコントロール */}
       <div
         className={`absolute inset-0 transition-opacity duration-150 ${
